@@ -138,6 +138,9 @@ CORS_ALLOWED_ORIGINS = [
 # Use custom user model
 AUTH_USER_MODEL = 'users.CustomUser'
 
+# Email configuration (console backend for development)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # REST framework + JWT settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
