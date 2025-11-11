@@ -135,6 +135,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
+# Use custom user model
+AUTH_USER_MODEL = 'users.CustomUser'
+
 # REST framework + JWT settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

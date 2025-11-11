@@ -5,11 +5,18 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer
 
 
+User = get_user_model()
+
+
 class RegisterAPIView(APIView):
+	"""Register a new user and return JWT access & refresh tokens.
+
+	Required fields: username, email (must be @bennett.edu.in), password, password2, field_of_interest
+	"""
 	permission_classes = (permissions.AllowAny,)
 
 	def post(self, request):
