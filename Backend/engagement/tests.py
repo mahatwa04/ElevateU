@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from users.models import CustomUser
-from .models import Engagement
+from .models import Engagement, Follow
 
 
 class EngagementAPITestCase(TestCase):
@@ -45,5 +45,35 @@ class EngagementAPITestCase(TestCase):
 
         ct = ContentType.objects.get_for_model(self.other)
         resp = self.client.get(self.list_url, {'content_type': ct.model, 'object_id': self.other.id})
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(resp.data), 1)
+
+    def test_follow_user(self):
+        self.client.force_authenticate(self.user)
+        url = reverse('engagement:follow_list_create')
+        payload = {'following': self.other.id}
+        resp = self.client.post(url, payload, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Follow.objects.count(), 1)
+
+    def test_cannot_follow_self(self):
+        self.client.force_authenticate(self.user)
+        url = reverse('engagement:follow_list_create')
+        payload = {'following': self.user.id}
+        resp = self.client.post(url, payload, format='json')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_unfollow(self):
+        f = Follow.objects.create(follower=self.user, following=self.other)
+        self.client.force_authenticate(self.user)
+        url = reverse('engagement:follow_detail', kwargs={'pk': f.id})
+        resp = self.client.delete(url)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Follow.objects.count(), 0)
+
+    def test_list_followers(self):
+        Follow.objects.create(follower=self.user, following=self.other)
+        url = reverse('engagement:follow_list_create')
+        resp = self.client.get(url, {'user': self.other.id})
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(resp.data), 1)
