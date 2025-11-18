@@ -1,0 +1,11 @@
+/* globals.css moved to app/globals.css for Next.js app router
+   Keep this file only if you intentionally want to use a separate global
+   stylesheet under `src/styles/`. Otherwise it can be deleted.
+*/
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Note: app/globals.css is the canonical global stylesheet for the app.
+   This file now serves only as a placeholder to avoid breaking imports.
+*/
