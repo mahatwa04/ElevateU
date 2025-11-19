@@ -1,0 +1,10 @@
+from rest_framework import viewsets
+from .models import Engagement
+from .serializers import EngagementSerializer
+
+class EngagementViewSet(viewsets.ModelViewSet):
+    queryset = Engagement.objects.all()
+    serializer_class = EngagementSerializer
+
+    def perform_create(self, serializer):
+        serializer.save()
