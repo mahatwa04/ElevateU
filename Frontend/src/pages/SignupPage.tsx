@@ -12,7 +12,7 @@ const SignupPage: React.FC = () => {
     password2: '',
     first_name: '',
     last_name: '',
-    field: 'academics',
+    field_of_interest: 'academics',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -170,11 +170,11 @@ const SignupPage: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="field">Field of Interest</label>
+                <label htmlFor="field_of_interest">Field of Interest</label>
                 <select
-                  id="field"
-                  name="field"
-                  value={formData.field}
+                  id="field_of_interest"
+                  name="field_of_interest"
+                  value={formData.field_of_interest}
                   onChange={handleChange}
                 >
                   <option value="academics">Academics</option>

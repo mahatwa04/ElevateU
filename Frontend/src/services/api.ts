@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
 // Configure API base URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -71,7 +71,7 @@ export const authAPI = {
     password2: string;
     first_name?: string;
     last_name?: string;
-    field?: string;
+    field_of_interest?: string;
   }) => api.post('/auth/register/', userData),
 
   // Verify email with OTP
