@@ -1,0 +1,147 @@
+name: Security Audit
+
+on:
+  schedule:
+    # Run every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  dependency-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Run Python dependency audit
+      run: |
+        cd Backend
+        pip install safety
+        safety check --json || true
+
+    - name: Run Node dependency audit
+      run: |
+        cd Frontend
+        npm audit --json || true
+
+  container-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build backend image for scanning
+      uses: docker/build-push-action@v5
+      with:
+        context: ./Backend
+        push: false
+        load: true
+        tags: elevateu:backend-scan
+
+    - name: Run Trivy scan on backend image
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'elevateu:backend-scan'
+        format: 'sarif'
+        output: 'trivy-backend.sarif'
+
+    - name: Build frontend image for scanning
+      uses: docker/build-push-action@v5
+      with:
+        context: ./Frontend
+        push: false
+        load: true
+        tags: elevateu:frontend-scan
+
+    - name: Run Trivy scan on frontend image
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'elevateu:frontend-scan'
+        format: 'sarif'
+        output: 'trivy-frontend.sarif'
+
+    - name: Upload results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-*.sarif'
+
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+        cache: 'pip'
+
+    - name: Install quality tools
+      run: |
+        cd Backend
+        pip install flake8 pylint black isort
+
+    - name: Check code formatting
+      run: |
+        cd Backend
+        black --check . || true
+
+    - name: Check import sorting
+      run: |
+        cd Backend
+        isort --check-only . || true
+
+    - name: Run pylint
+      run: |
+        cd Backend
+        pylint --disable=all --enable=E,F --exit-zero . || true
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: Frontend/package-lock.json
+
+    - name: Check frontend code quality
+      run: |
+        cd Frontend
+        npm install --save-dev prettier eslint
+        npx prettier --check . || true
+
+  sast-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: 'javascript, python'
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+  secrets-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: TruffleHog Secret Scanning
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
+        extra_args: --debug --only-verified

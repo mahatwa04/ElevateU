@@ -1,0 +1,166 @@
+.profile-page {
+  background-color: var(--light-bg);
+  min-height: 100vh;
+}
+
+.profile-header {
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: white;
+  padding: 40px 0;
+}
+
+.profile-info {
+  display: flex;
+  align-items: start;
+  gap: 30px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.profile-details {
+  flex: 1;
+}
+
+.profile-details h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+}
+
+.username {
+  font-size: 16px;
+  opacity: 0.9;
+  margin: 4px 0;
+}
+
+.field {
+  font-size: 14px;
+  opacity: 0.85;
+  margin: 4px 0 12px 0;
+}
+
+.bio {
+  margin: 12px 0;
+  max-width: 500px;
+}
+
+.profile-details .btn {
+  margin-top: 12px;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 40px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+.profile-content {
+  padding: 40px 0;
+}
+
+.profile-section {
+  margin-bottom: 40px;
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section h2 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.empty {
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.user-list {
+  display: grid;
+  gap: 12px;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.user-card:hover {
+  background-color: var(--light-bg);
+  border-color: var(--primary-color);
+}
+
+.user-info h4 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.user-info p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .profile-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-stats {
+    justify-content: center;
+  }
+
+  .profile-header {
+    padding: 30px 0;
+  }
+
+  .profile-section {
+    padding: 20px;
+  }
+}
