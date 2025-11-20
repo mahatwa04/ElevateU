@@ -1,0 +1,220 @@
+{
+  "info": {
+    "_postman_id": "elevate-u-auth-api",
+    "name": "ElevateU Authentication API",
+    "description": "Collection for testing email OTP verification system",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth Endpoints",
+      "item": [
+        {
+          "name": "1. Register (Create Account + Send OTP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice\",\n  \"email\": \"alice@bennett.edu.in\",\n  \"password\": \"SecurePass123!\",\n  \"password2\": \"SecurePass123!\",\n  \"field_of_interest\": \"Computer Science\",\n  \"first_name\": \"Alice\",\n  \"last_name\": \"Smith\",\n  \"bio\": \"I love coding\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/register/",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "auth", "register", ""]
+            },
+            "description": "Register a new user with @bennett.edu.in email. OTP will be printed to console."
+          },
+          "response": []
+        },
+        {
+          "name": "2. Verify Email (OTP Verification + Get JWT)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice@bennett.edu.in\",\n  \"otp_code\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/verify-email/",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "auth", "verify-email", ""]
+            },
+            "description": "Verify email with OTP (6 digits). Replace with actual OTP from console."
+          },
+          "response": []
+        },
+        {
+          "name": "3. Login (Obtain JWT Tokens)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice\",\n  \"password\": \"SecurePass123!\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/token/",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "auth", "token", ""]
+            },
+            "description": "Login with username and password to get access and refresh tokens."
+          },
+          "response": []
+        },
+        {
+          "name": "4. Refresh Access Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"paste_refresh_token_here\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/token/refresh/",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "auth", "token", "refresh", ""]
+            },
+            "description": "Use refresh token to get a new access token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Error Cases",
+      "item": [
+        {
+          "name": "E1. Invalid Email Domain (Non-bennett)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"bob\",\n  \"email\": \"bob@gmail.com\",\n  \"password\": \"SecurePass123!\",\n  \"password2\": \"SecurePass123!\",\n  \"field_of_interest\": \"Sports\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/register/",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "auth", "register", ""]
+            },
+            "description": "Should fail: only @bennett.edu.in emails allowed"
+          },
+          "response": []
+        },
+        {
+          "name": "E2. Mismatched Passwords",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"charlie\",\n  \"email\": \"charlie@bennett.edu.in\",\n  \"password\": \"SecurePass123!\",\n  \"password2\": \"DifferentPass123!\",\n  \"field_of_interest\": \"Music\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/register/",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "auth", "register", ""]
+            },
+            "description": "Should fail: password and password2 must match"
+          },
+          "response": []
+        },
+        {
+          "name": "E3. Wrong OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice@bennett.edu.in\",\n  \"otp_code\": \"000000\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/verify-email/",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "auth", "verify-email", ""]
+            },
+            "description": "Should fail: OTP does not match"
+          },
+          "response": []
+        },
+        {
+          "name": "E4. Duplicate Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice2\",\n  \"email\": \"alice@bennett.edu.in\",\n  \"password\": \"AnotherPass123!\",\n  \"password2\": \"AnotherPass123!\",\n  \"field_of_interest\": \"Science\"\n}"
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/auth/register/",
+              "protocol": "http",
+              "host": ["127", "0", "0", "1"],
+              "port": "8000",
+              "path": ["api", "auth", "register", ""]
+            },
+            "description": "Should fail: email already registered (if alice exists)"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
