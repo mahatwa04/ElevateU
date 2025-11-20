@@ -1,5 +1,4 @@
 from django.contrib import admin
-<<<<<<< HEAD
 from .models import Post
 
 
@@ -8,9 +7,3 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'user', 'category', 'like_count', 'comment_count', 'created_at')
     list_filter = ('category', 'created_at')
     search_fields = ('title', 'description', 'user__username', 'user__email')
-from django.contrib import admin
-=======
-from .models import Achievement
->>>>>>> e329792 (feat(posts): add Achievement model + admin register + initial migration)
-
-admin.site.register(Achievement)
