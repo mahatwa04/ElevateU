@@ -22,7 +22,7 @@ class Post(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.title} by {self.user}"
 
 
@@ -47,7 +47,7 @@ class Achievement(models.Model):
     class Meta:
         ordering = ['-created_at']
 
-    def _str_(self):
+    def __str__(self):
         # author may be a user model instance; use username if available
         username = getattr(self.author, 'username', str(self.author))
         return f"{self.title} by {username}"
