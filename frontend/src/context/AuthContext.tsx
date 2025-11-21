@@ -40,12 +40,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [refreshToken, setRefreshTokenState] = useState<string | null>(() => readToken(REFRESH_KEY))
 
   // React Query to fetch user profile when access token exists
-  const { data: user, refetch, isLoading } = useQuery(['auth', 'me'], fetchMe, {
+  const { data: user, refetch, isLoading } = useQuery({
+    queryKey: ['auth', 'me'],
+    queryFn: fetchMe,
     enabled: !!accessToken,
     retry: false,
-    onError: () => {
-      // if fetchMe fails, clear tokens
-    },
   })
 
   useEffect(() => {
@@ -62,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setTokens(access, refresh)
     setAccessToken(access)
     setRefreshTokenState(refresh)
-    await queryClient.invalidateQueries(['auth', 'me'])
+    await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
     await refetch()
   }, [queryClient, refetch])
 
