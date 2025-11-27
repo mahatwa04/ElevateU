@@ -2,13 +2,13 @@ services:
   - type: web
     name: elevateu-backend
     runtime: python
-    pythonVersion: 3.11
+    pythonVersion: 3.13
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn elevateu_backend.wsgi
+    buildCommand: pip install -r Backend/requirements.txt
+    startCommand: cd Backend && gunicorn elevateu_backend.wsgi
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.13
       - key: DEBUG
         value: false
       - key: SECRET_KEY
