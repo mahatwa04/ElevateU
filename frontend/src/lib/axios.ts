@@ -20,7 +20,9 @@ const setTokens = (access: string, refresh?: string) => {
 const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
+  withCredentials: false,  // Don't send cookies
 })
 
 // Token refresh queue
