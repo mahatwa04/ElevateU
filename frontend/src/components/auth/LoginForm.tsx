@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginSchema } from '../../schemas/authSchema'
 import { useAuthContext } from '../../context/AuthContext'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function LoginForm() {
   const { register, handleSubmit, formState } = useForm<LoginSchema>({ resolver: zodResolver(loginSchema) })
@@ -25,22 +26,30 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      {apiError && <div className="text-sm text-red-600">{apiError}</div>}
-      <div>
-        <label className="block text-sm">Email</label>
-        <input className="w-full border p-2 rounded" {...register('email')} />
-      </div>
-      <div>
-        <label className="block text-sm">Password</label>
-        <input type="password" className="w-full border p-2 rounded" {...register('password')} />
-      </div>
-      <button
-        type="submit"
-        disabled={formState.isSubmitting}
-        className={`w-full py-2 rounded ${formState.isSubmitting ? 'bg-indigo-300' : 'bg-indigo-600 text-white'}`}>
-        {formState.isSubmitting ? 'Logging in...' : 'Login'}
-      </button>
-    </form>
+    <div className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+        {apiError && <div className="text-sm text-red-600">{apiError}</div>}
+        <div>
+          <label className="block text-sm">Email</label>
+          <input className="w-full border p-2 rounded" {...register('email')} />
+        </div>
+        <div>
+          <label className="block text-sm">Password</label>
+          <input type="password" className="w-full border p-2 rounded" {...register('password')} />
+        </div>
+        <button
+          type="submit"
+          disabled={formState.isSubmitting}
+          className={`w-full py-2 rounded ${formState.isSubmitting ? 'bg-indigo-300' : 'bg-indigo-600 text-white'}`}>
+          {formState.isSubmitting ? 'Logging in...' : 'Login'}
+        </button>
+      </form>
+      <p className="text-sm text-center text-gray-600">
+        Don't have an account?{' '}
+        <Link href="/register" className="text-indigo-600 hover:underline">
+          Register here
+        </Link>
+      </p>
+    </div>
   )
 }

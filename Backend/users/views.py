@@ -4,8 +4,8 @@ from datetime import timedelta
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
 
 from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer, VerifyEmailSerializer
@@ -84,7 +84,58 @@ class VerifyEmailAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginTokenObtainPairView(TokenObtainPairView):
-    """Extends the simplejwt TokenObtainPairView in case we need customization."""
+class LoginTokenObtainPairView(APIView):
+    """Login with email and password, returns JWT tokens."""
     permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        if not email or not password:
+            return Response(
+                {'detail': 'Email and password are required.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Find user by email (case-insensitive)
+        try:
+            user = User.objects.get(email__iexact=email)
+        except User.DoesNotExist:
+            return Response(
+                {'detail': 'Invalid email or password.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Check if password is correct
+        if not user.check_password(password):
+            return Response(
+                {'detail': 'Invalid email or password.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Check if email is verified
+        if not user.campus_verified:
+            return Response(
+                {'detail': 'Email not verified. Please verify your email first.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Generate tokens
+        refresh = RefreshToken.for_user(user)
+        data = {
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            'user': UserSerializer(user).data,
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class GetUserAPIView(APIView):
+    """Get current user profile."""
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 

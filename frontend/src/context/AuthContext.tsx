@@ -38,12 +38,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient()
   const [accessToken, setAccessToken] = useState<string | null>(() => readToken(ACCESS_KEY))
   const [refreshToken, setRefreshTokenState] = useState<string | null>(() => readToken(REFRESH_KEY))
+  const [initialUser, setInitialUser] = useState<User | null>(null)
 
   // React Query to fetch user profile when access token exists
   const { data: user, refetch, isLoading } = useQuery({
     queryKey: ['auth', 'me'],
     queryFn: fetchMe,
-    enabled: !!accessToken,
+    enabled: !!accessToken && !initialUser,
     retry: false,
   })
 
@@ -58,18 +59,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const resp = await api.post('/api/auth/token/', { email, password })
     const access = resp.data.access
     const refresh = resp.data.refresh
+    const loginUser = resp.data.user
+    
     setTokens(access, refresh)
     setAccessToken(access)
     setRefreshTokenState(refresh)
-    await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
-    await refetch()
-  }, [queryClient, refetch])
+    setInitialUser(loginUser)
+    
+    // Set the user immediately without waiting for the query
+    queryClient.setQueryData(['auth', 'me'], loginUser)
+  }, [queryClient])
 
   const logout = useCallback(() => {
     removeToken(ACCESS_KEY)
     removeToken(REFRESH_KEY)
     setAccessToken(null)
     setRefreshTokenState(null)
+    setInitialUser(null)
     queryClient.setQueryData(['auth', 'me'], null)
   }, [queryClient])
 
@@ -82,14 +88,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setTokens(access, newRefresh)
     setAccessToken(access)
     setRefreshTokenState(newRefresh)
-    await queryClient.invalidateQueries(['auth', 'me'])
+    await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] })
   }, [queryClient])
 
   const value: AuthContextValue = {
-    user: (user as User) || null,
+    user: (user as User) || initialUser || null,
     accessToken,
     refreshToken,
-    loading: isLoading,
+    loading: isLoading && !initialUser,
     login,
     logout,
     refreshTokens,

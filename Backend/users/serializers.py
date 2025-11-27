@@ -78,7 +78,7 @@ class VerifyEmailSerializer(serializers.Serializer):
         otp_code = attrs['otp_code'].strip()
 
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
             raise serializers.ValidationError('User with this email does not exist.')
 
