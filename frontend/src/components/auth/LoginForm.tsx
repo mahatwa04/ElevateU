@@ -16,12 +16,30 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginSchema) => {
     setApiError(null)
     try {
+      console.log('Attempting login with:', { email: data.email })
+      console.log('API base URL will be:', process.env.NEXT_PUBLIC_API_BASE)
       await login(data.email, data.password)
       router.push('/')
     } catch (err: any) {
+      console.error('Login error details:', {
+        message: err?.message,
+        code: err?.code,
+        responseStatus: err?.response?.status,
+        responseData: err?.response?.data,
+        fullError: err
+      })
       // Try to extract API error message
-      const msg = err?.response?.data?.detail || err?.response?.data || err?.message || 'Login failed'
-      setApiError(typeof msg === 'string' ? msg : JSON.stringify(msg))
+      let msg = 'Network error - please try again'
+      if (err?.response?.data?.detail) {
+        msg = err.response.data.detail
+      } else if (err?.response?.data?.non_field_errors?.[0]) {
+        msg = err.response.data.non_field_errors[0]
+      } else if (err?.response?.data) {
+        msg = typeof err.response.data === 'string' ? err.response.data : JSON.stringify(err.response.data)
+      } else if (err?.message) {
+        msg = err.message
+      }
+      setApiError(msg)
     }
   }
 
