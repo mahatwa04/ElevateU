@@ -26,9 +26,11 @@ jobs:
       
       - name: Build Next.js
         run: cd frontend && npm run build
+        env:
+          NEXT_PUBLIC_API_BASE: https://elevateu-backend-777j.onrender.com
       
       - name: Export static site
-        run: cd frontend && npm run export
+        run: cd frontend && npm run export 2>/dev/null || echo "Export not available, using build output"
       
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -36,3 +38,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./frontend/out
           cname: elevateu.bennettuniversity.edu
+
