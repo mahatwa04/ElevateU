@@ -1,6 +1,22 @@
 import axios from 'axios'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000'
+// Determine API base URL based on environment
+const getAPIBase = () => {
+  // For server-side rendering, use the public URL
+  if (typeof window === 'undefined') {
+    return 'https://elevateu-backend-777j.onrender.com'
+  }
+  
+  // For client-side, check if localhost or production
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8000'
+  }
+  
+  // Default to production backend
+  return 'https://elevateu-backend-777j.onrender.com'
+}
+
+const API_BASE = getAPIBase()
 
 const api = axios.create({
   baseURL: API_BASE,
