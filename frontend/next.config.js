@@ -1,11 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  basePath: '/ElevateU',
   reactStrictMode: true,
-  images: {
-    unoptimized: true,
-  },
+  swcMinify: true,
 }
 
 module.exports = nextConfig
