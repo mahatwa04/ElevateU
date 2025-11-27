@@ -44,35 +44,38 @@ export default function VerifyEmailForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <div className="text-sm text-red-600">{error}</div>}
+      {error && <div className="text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">{error}</div>}
+      {success && <div className="text-sm text-green-600 bg-green-50 p-3 rounded border border-green-200">Email verified! Redirecting...</div>}
       <div>
-        <label className="block text-sm">Email</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
         <input
           type="email"
           value={email}
           disabled
-          className="w-full border p-2 rounded bg-gray-100"
+          className="w-full border border-gray-300 p-3 rounded-lg bg-gray-50 text-gray-600"
         />
       </div>
       <div>
-        <label className="block text-sm">6-Digit OTP</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">6-Digit OTP</label>
         <input
           type="text"
           maxLength={6}
           value={otp}
           onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
           placeholder="000000"
-          className="w-full border p-2 rounded text-center text-2xl tracking-widest"
+          className="w-full border border-gray-300 p-3 rounded-lg text-center text-2xl tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
       </div>
       <button
         type="submit"
         disabled={loading || otp.length !== 6}
-        className={`w-full py-2 rounded ${
-          loading || otp.length !== 6 ? 'bg-blue-300' : 'bg-blue-600 text-white'
+        className={`w-full py-3 rounded-lg font-medium transition-all duration-200 ${
+          loading || otp.length !== 6 
+            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+            : 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/50'
         }`}
       >
-        {loading ? 'Verifying...' : 'Verify'}
+        {loading ? 'Verifying...' : 'Verify Email'}
       </button>
     </form>
   )

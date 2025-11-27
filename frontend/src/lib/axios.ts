@@ -1,34 +1,14 @@
 import axios from 'axios'
 
-// Determine API base URL based on environment (called at runtime, not build time)
+// Get API base URL at runtime
 const getAPIBase = (): string => {
-  // Only access window in client-side code
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname
-    // Local development
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:8000'
-    }
-  }
-  
-  // Production - always use Render backend
+  if (typeof window === 'undefined') return 'https://elevateu-backend-777j.onrender.com'
+  const hostname = window.location.hostname
+  if (hostname === 'localhost' || hostname === '127.0.0.1') return 'http://localhost:8000'
   return 'https://elevateu-backend-777j.onrender.com'
 }
 
-// Create API client with dynamic baseURL that gets resolved at runtime
-const api = axios.create({
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
-// Set baseURL dynamically on each request
-api.interceptors.request.use((config) => {
-  config.baseURL = getAPIBase()
-  return config
-})
-
-// Simple token helpers. For production, prefer httpOnly cookies.
+// Helper functions
 const getAccessToken = () => typeof window !== 'undefined' ? localStorage.getItem('access') : null
 const getRefreshToken = () => typeof window !== 'undefined' ? localStorage.getItem('refresh') : null
 const setTokens = (access: string, refresh?: string) => {
@@ -36,6 +16,14 @@ const setTokens = (access: string, refresh?: string) => {
   if (refresh) localStorage.setItem('refresh', refresh)
 }
 
+// Create axios instance
+const api = axios.create({
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// Token refresh queue
 let isRefreshing = false
 let failedQueue: Array<any> = []
 
@@ -47,11 +35,12 @@ const processQueue = (error: any, token: string | null = null) => {
       prom.resolve(token)
     }
   })
-
   failedQueue = []
 }
 
+// Request interceptor - add token and set API base
 api.interceptors.request.use((config) => {
+  config.baseURL = getAPIBase()
   const token = getAccessToken()
   if (token && config.headers) {
     config.headers['Authorization'] = `Bearer ${token}`
@@ -59,6 +48,7 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// Response interceptor - handle 401 errors with token refresh
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -103,3 +93,4 @@ api.interceptors.response.use(
 )
 
 export { api, setTokens }
+
