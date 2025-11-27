@@ -1,28 +1,31 @@
 import axios from 'axios'
 
-// Determine API base URL based on environment
-const getAPIBase = () => {
-  // For server-side rendering, use the public URL
-  if (typeof window === 'undefined') {
-    return 'https://elevateu-backend-777j.onrender.com'
+// Determine API base URL based on environment (called at runtime, not build time)
+const getAPIBase = (): string => {
+  // Only access window in client-side code
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname
+    // Local development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:8000'
+    }
   }
   
-  // For client-side, check if localhost or production
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return 'http://localhost:8000'
-  }
-  
-  // Default to production backend
+  // Production - always use Render backend
   return 'https://elevateu-backend-777j.onrender.com'
 }
 
-const API_BASE = getAPIBase()
-
+// Create API client with dynamic baseURL that gets resolved at runtime
 const api = axios.create({
-  baseURL: API_BASE,
   headers: {
     'Content-Type': 'application/json',
   },
+})
+
+// Set baseURL dynamically on each request
+api.interceptors.request.use((config) => {
+  config.baseURL = getAPIBase()
+  return config
 })
 
 // Simple token helpers. For production, prefer httpOnly cookies.
@@ -82,7 +85,7 @@ api.interceptors.response.use(
       }
 
       try {
-        const resp = await axios.post(`${API_BASE}/api/auth/token/refresh/`, { refresh: refreshToken })
+        const resp = await axios.post(`${getAPIBase()}/api/auth/token/refresh/`, { refresh: refreshToken })
         const newToken = resp.data.access
         setTokens(newToken, resp.data.refresh)
         api.defaults.headers.common['Authorization'] = 'Bearer ' + newToken
