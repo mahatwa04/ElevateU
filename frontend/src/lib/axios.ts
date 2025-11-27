@@ -1,10 +1,10 @@
 import axios from 'axios'
 
-// Get API base URL at runtime
+// Get API base URL - for local dev, fallback to production backend
 const getAPIBase = (): string => {
   if (typeof window === 'undefined') return 'https://elevateu-backend-777j.onrender.com'
   const hostname = window.location.hostname
-  if (hostname === 'localhost' || hostname === '127.0.0.1') return 'http://localhost:8000'
+  // Use production backend for all (simplest solution for now)
   return 'https://elevateu-backend-777j.onrender.com'
 }
 
