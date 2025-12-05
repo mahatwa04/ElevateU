@@ -19,8 +19,25 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from core.views import health
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+class APIRoot(APIView):
+    def get(self, request):
+        return Response({
+            'message': 'ElevateU API',
+            'version': '1.0',
+            'endpoints': {
+                'health': '/api/health/',
+                'auth': '/api/auth/',
+                'posts': '/api/posts/',
+                'engagement': '/api/engagement/',
+                'admin': '/admin/',
+            }
+        })
 
 urlpatterns = [
+    path('api/', APIRoot.as_view()),
     path('admin/', admin.site.urls),
     path('api/health/', health),
     path('api/auth/', include('users.urls')),
