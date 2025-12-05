@@ -16,7 +16,7 @@ function getAPIBase() {
   }
   
   // Otherwise use production backend
-  return 'https://elevateu-backend-777j.onrender.com'
+  return 'https://elevateu-backend-34n7.onrender.com'
 }
 
 const API_BASE = getAPIBase()
