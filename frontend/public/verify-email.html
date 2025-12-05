@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Verify Email — ElevateU</title>
+  <link rel="stylesheet" href="global.css">
+</head>
+<body>
+  <div class="nav">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="brand">ElevateU</div>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <button class="theme-btn theme-toggle">🌓 Theme</button>
+    </div>
+  </div>
+
+  <div class="container" style="display:flex;justify-content:center;align-items:flex-start;gap:24px;margin-top:40px">
+    <div style="max-width:460px;width:100%">
+      <div class="card">
+        <h2 style="margin-top:0;color:var(--primary)">Verify Your Email</h2>
+        <p class="small" style="color:var(--muted);margin-bottom:20px">We've sent a verification code to your email. Enter it below to complete your registration.</p>
+        
+        <form id="verifyForm" method="post" action="#">
+          <label class="small">Email</label>
+          <input id="verifyEmail" name="email" type="email" required style="width:100%;padding:10px;border-radius:10px;margin:8px 0;border:1px solid #eef2ff;background:transparent">
+          
+          <label class="small">Verification Code</label>
+          <input id="verifyOTP" name="otp" placeholder="Enter 6-digit code" required style="width:100%;padding:10px;border-radius:10px;margin:8px 0;border:1px solid #eef2ff;background:transparent">
+          
+          <div style="display:flex;gap:12px;margin-top:20px">
+            <button class="btn" type="submit">Verify Email</button>
+            <a class="btn ghost" href="signup.html" style="text-decoration:none;">Back</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div style="width:360px">
+      <div class="card">
+        <h3 class="small">What's next?</h3>
+        <ul class="small">
+          <li>Verify your email with the OTP</li>
+          <li>Sign in to your account</li>
+          <li>Complete your profile</li>
+          <li>Start sharing achievements!</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script src="api-client.js"></script>
+  <script>
+    // Pre-fill email from query params
+    const params = new URLSearchParams(window.location.search)
+    const emailParam = params.get('email')
+    if (emailParam) {
+      document.getElementById('verifyEmail').value = decodeURIComponent(emailParam)
+    }
+
+    // Pre-fill OTP from development mode if available
+    const devOtp = sessionStorage.getItem('dev_otp')
+    if (devOtp) {
+      document.getElementById('verifyOTP').value = devOtp
+      // Show info that it was auto-filled
+      const infoDiv = document.createElement('div')
+      infoDiv.style.cssText = 'background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px;'
+      infoDiv.innerHTML = '✅ <strong>Development Mode:</strong> OTP has been auto-filled from registration response.'
+      document.querySelector('form').parentElement.insertBefore(infoDiv, document.querySelector('form'))
+    }
+
+    document.getElementById('verifyForm').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const email = document.getElementById('verifyEmail').value
+      const otp = document.getElementById('verifyOTP').value
+      
+      try {
+        const result = await api.request('/api/auth/verify-email/', 'POST', {
+          email: email,
+          otp: otp
+        })
+        console.log('Email verified:', result)
+        alert('Email verified successfully! You can now login.')
+        // Clear the stored OTP
+        sessionStorage.removeItem('dev_otp')
+        window.location.href = 'login.html'
+      } catch (error) {
+        console.error('Verification error:', error)
+        const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
+        alert('Verification failed: ' + errorMsg)
+      }
+    })
+  </script>
+</body>
+</html>

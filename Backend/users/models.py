@@ -13,6 +13,7 @@ class CustomUser(AbstractUser):
     field_of_interest = models.CharField(max_length=100)
     bio = models.TextField(blank=True, null=True)
     campus_verified = models.BooleanField(default=False)
+    profile_photo = models.TextField(blank=True, null=True, help_text="Profile photo as data URL or image URL")
 
     def __str__(self):
         return f"{self.username} <{self.email}>"

@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Feed — ElevateU</title>
+  <link rel="stylesheet" href="global.css">
+  <style>
+    .nav nav {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    .nav nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+    .nav nav a:hover {
+      color: var(--text);
+      background: rgba(108, 99, 255, 0.1);
+    }
+    .nav nav a.active {
+      color: var(--primary);
+      background: linear-gradient(90deg,var(--primary)20%,transparent);
+    }
+    .logout-btn {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .logout-btn:hover {
+      background: var(--primary-600);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="brand">ElevateU</div>
+      <nav>
+        <a href="feed.html" class="active">Feed</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </div>
+    <div class="nav-links">
+      <div class="small" id="navUsername">Loading...</div>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+      <button class="theme-btn theme-toggle">🌓 Theme</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="layout" style="display: grid; grid-template-columns: 280px 1fr 280px; gap: 24px; max-width: 1400px; margin: 0 auto;">
+      <!-- Left Sidebar: Department Filters -->
+      <aside class="card" style="padding: 24px; height: fit-content; position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto;">
+        <h4 style="margin: 0 0 16px; font-size: 16px; font-weight: 700;">Browse Departments</h4>
+        <div id="departmentFilters" style="display: flex; flex-direction: column; gap: 8px;">
+          <button class="dept-filter" data-dept="all" style="padding: 10px 12px; background: #6c63ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.3s ease;">All Posts</button>
+          <button class="dept-filter" data-dept="Computer Science" style="padding: 10px 12px; background: transparent; color: var(--text); border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.3s ease;">💻 Computer Science</button>
+          <button class="dept-filter" data-dept="Business" style="padding: 10px 12px; background: transparent; color: var(--text); border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.3s ease;">📊 Business</button>
+          <button class="dept-filter" data-dept="Engineering" style="padding: 10px 12px; background: transparent; color: var(--text); border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.3s ease;">⚙️ Engineering</button>
+          <button class="dept-filter" data-dept="Design" style="padding: 10px 12px; background: transparent; color: var(--text); border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.3s ease;">🎨 Design</button>
+          <button class="dept-filter" data-dept="Media" style="padding: 10px 12px; background: transparent; color: var(--text); border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.3s ease;">📹 Media</button>
+          <button class="dept-filter" data-dept="Sports" style="padding: 10px 12px; background: transparent; color: var(--text); border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.3s ease;">⚽ Sports</button>
+          <button class="dept-filter" data-dept="Research" style="padding: 10px 12px; background: transparent; color: var(--text); border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.3s ease;">🔬 Research</button>
+          <button class="dept-filter" data-dept="Cultural" style="padding: 10px 12px; background: transparent; color: var(--text); border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; transition: all 0.3s ease;">🎭 Cultural</button>
+        </div>
+      </aside>
+
+      <!-- Main Content: Feed -->
+      <main>
+        <div class="card" style="margin-bottom: 14px;">
+          <h3 style="margin: 0 0 8px; font-size: 18px;">Share an Achievement</h3>
+          <form id="postForm" method="post" action="#" enctype="multipart/form-data" class="composer">
+            <input name="title" placeholder="What did you achieve?" style="padding: 10px; border-radius: 10px; border: 1px solid #eef2ff; width: 100%; margin-bottom: 12px; font-family: inherit;">
+            <textarea name="body" placeholder="Tell us more about your achievement..." required style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #eef2ff; min-height: 100px; font-family: inherit; margin-bottom: 12px;"></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <label class="small">Department</label>
+              <select name="category" style="flex: 1; margin-left: 12px; padding: 8px; border-radius: 8px; border: 1px solid #eef2ff; font-family: inherit;">
+                <option value="Computer Science">💻 Computer Science</option>
+                <option value="Business">📊 Business</option>
+                <option value="Engineering">⚙️ Engineering</option>
+                <option value="Design">🎨 Design</option>
+                <option value="Media">📹 Media</option>
+                <option value="Sports">⚽ Sports</option>
+                <option value="Research">🔬 Research</option>
+                <option value="Cultural">🎭 Cultural</option>
+              </select>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <label class="small">Image</label>
+              <input type="file" name="imageFile" accept="image/*" style="flex: 1; margin-left: 12px; padding: 8px; border-radius: 8px; border: 1px solid #eef2ff;" />
+            </div>
+            <button class="btn" type="submit" style="background: #6c63ff; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Post Achievement</button>
+          </form>
+        </div>
+
+        <!-- Tabs for Feed -->
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid rgba(0,0,0,0.1);">
+          <button style="padding: 12px 16px; background: #6c63ff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">All Posts</button>
+          <button style="padding: 12px 16px; background: transparent; color: var(--muted); border: none; cursor: pointer; font-weight: 600;">Following</button>
+        </div>
+
+        <!-- Posts Feed -->
+        <div id="posts" style="margin-top: 0;">
+          <!-- Post cards will appear here (from backend) -->
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Suggested Students -->
+      <aside class="card" style="padding: 24px; height: fit-content; position: sticky; top: 80px; max-height: calc(100vh - 100px); overflow-y: auto;">
+        <h4 style="margin: 0 0 16px; font-size: 16px; font-weight: 700;">Explore Students</h4>
+        <div id="suggestedStudents" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Suggested students will be loaded here -->
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script src="api-client.js"></script>
+  <script>
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      api.logout()
+      window.location.href = 'index.html'
+    })
+
+    // Load user info and posts on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Check if user is logged in
+        if (!api.accessToken) {
+          window.location.href = 'login.html'
+          return
+        }
+        
+        // Load user info
+        const user = await api.getMe()
+        
+        // Update navbar username - show just username
+        document.getElementById('navUsername').textContent = user.username
+        
+        // Profile elements no longer in left sidebar (now showing department filters)
+        // Code to update profile info removed as elements don't exist anymore
+        
+        // Load posts from backend
+        const posts = await api.getPosts()
+        
+        // Store all posts for filtering
+        window.allPosts = posts || []
+        
+        // Function to filter and display posts
+        function displayPosts(dept = 'all') {
+          const postsContainer = document.getElementById('posts')
+          let filteredPosts = window.allPosts
+          
+          if (dept !== 'all') {
+            filteredPosts = filteredPosts.filter(post => 
+              (post.department || post.category || '').toLowerCase() === dept.toLowerCase()
+            )
+          }
+        
+          if (filteredPosts && filteredPosts.length > 0) {
+            postsContainer.innerHTML = filteredPosts.map(post => {
+              const postInitial = (post.user || 'U').charAt(0).toUpperCase()
+              const imageHtml = post.image_url ? `<img src="${post.image_url}" style="width: 100%; border-radius: 8px; margin: 12px 0; max-height: 400px; object-fit: cover;" alt="Post image" />` : ''
+            const userAvatar = post.user_profile_photo 
+              ? `<div style="width: 40px; height: 40px; border-radius: 8px; background-image: url(${post.user_profile_photo}); background-size: cover; background-position: center; flex-shrink: 0;"></div>`
+              : `<div style="width: 40px; height: 40px; border-radius: 8px; background: linear-gradient(135deg, #6c63ff, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; flex-shrink: 0;">${postInitial}</div>`
+            return `
+            <div class="card post" style="margin-bottom: 16px; padding: 16px;" data-post-id="${post.id}">
+              <div style="display: flex; gap: 12px; margin-bottom: 12px;">
+                ${userAvatar}
+                <div>
+                  <div style="font-weight: 600;">${post.user}</div>
+                  <div style="font-size: 12px; color: var(--muted);">${new Date(post.created_at).toLocaleDateString()}</div>
+                </div>
+              </div>
+              <div style="margin-bottom: 12px; line-height: 1.5;">${post.description}</div>
+              ${imageHtml}
+              <div style="display: flex; gap: 16px; font-size: 14px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.1);">
+                <button class="like-btn" data-post-id="${post.id}" style="background: none; border: none; cursor: pointer; color: #6b7280; font-size: 14px; padding: 0; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+                  <span class="like-emoji">👍</span>
+                  <span class="like-count">${post.like_count || 0}</span>
+                  <span>likes</span>
+                </button>
+                <button class="comment-btn" data-post-id="${post.id}" style="background: none; border: none; cursor: pointer; color: #6b7280; font-size: 14px; padding: 0; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+                  <span>💬</span>
+                  <span class="comment-count">${post.comments?.length || 0}</span>
+                  <span>comments</span>
+                </button>
+                <button class="delete-btn" data-post-id="${post.id}" style="background: none; border: none; cursor: pointer; color: #ef4444; font-size: 14px; padding: 0; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; margin-left: auto;">
+                  <span>🗑️</span>
+                  <span>Delete</span>
+                </button>
+              </div>
+              ${post.comments && post.comments.length > 0 ? `
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.05);">
+                  ${post.comments.map(comment => `
+                    <div style="margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.02); border-radius: 6px;">
+                      <div style="font-weight: 600; font-size: 13px;">${comment.user}</div>
+                      <div style="font-size: 13px; color: var(--text); margin-top: 4px;">${comment.text}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+            `
+          }).join('')
+          
+          // Add event listeners to like buttons
+          document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.preventDefault()
+              const postId = btn.dataset.postId
+              
+              try {
+                // Call backend to like/unlike
+                const response = await api.request(`/api/posts/${postId}/like/`, 'POST', {})
+                
+                // Reload posts to get updated data
+                location.reload()
+              } catch (err) {
+                console.error('Error liking post:', err)
+                alert('Error updating like: ' + err.message)
+              }
+            })
+          })
+          
+          // Add event listeners to comment buttons
+          document.querySelectorAll('.comment-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.preventDefault()
+              const postId = btn.dataset.postId
+              const commentText = prompt('Enter your comment:')
+              
+              if (!commentText || !commentText.trim()) return
+              
+              try {
+                await api.request(`/api/posts/${postId}/comments/`, 'POST', {
+                  text: commentText.trim()
+                })
+                alert('Comment added!')
+                location.reload()
+              } catch (err) {
+                alert('Error: ' + err.message)
+              }
+            })
+          })
+          
+          // Add event listeners to delete buttons
+          document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              e.preventDefault()
+              const postId = btn.dataset.postId
+              
+              if (!confirm('Are you sure you want to delete this post?')) return
+              
+              try {
+                await fetch(`${api.baseURL}/api/posts/${postId}/`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Authorization': `Bearer ${api.accessToken}`,
+                  }
+                })
+                alert('Post deleted!')
+                location.reload()
+              } catch (err) {
+                console.error('Error deleting post:', err)
+                alert('Error deleting post: ' + err.message)
+              }
+            })
+          })
+          } else {
+            postsContainer.innerHTML = `
+              <div style="text-align: center; padding: 40px; color: #6b7280;">
+                <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+                <p>No posts yet. Be the first to share an achievement!</p>
+              </div>
+            `
+          }
+        }
+        
+        // Display all posts initially
+        displayPosts('all')
+        
+        // Add department filter event listeners
+        document.querySelectorAll('.dept-filter').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const dept = btn.dataset.dept
+            
+            // Update button styles
+            document.querySelectorAll('.dept-filter').forEach(b => {
+              b.style.background = 'transparent'
+              b.style.color = 'var(--text)'
+              b.style.border = '1px solid rgba(108, 99, 255, 0.2)'
+            })
+            
+            btn.style.background = '#6c63ff'
+            btn.style.color = 'white'
+            btn.style.border = '1px solid #6c63ff'
+            
+            // Display filtered posts
+            displayPosts(dept)
+          })
+        })
+            
+        // Load suggested students
+        try {
+          const users = await api.request('/api/auth/users/')
+          
+          if (users && users.length > 0) {
+            const suggestedStudents = users
+              .map(u => ({
+                ...u,
+                score: (u.achievements || 0) * 5 + (u.profile?.likes || 0) * 2 + (u.followers?.length || 0) * 3
+              }))
+              .sort((a, b) => b.score - a.score)
+              .slice(0, 5)
+            
+            const suggestedContainer = document.getElementById('suggestedStudents')
+            suggestedContainer.innerHTML = suggestedStudents.map(u => {
+              const fullName = `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.username
+              const initial = (u.first_name || u.username || 'U').charAt(0).toUpperCase()
+              return `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(108, 99, 255, 0.05); border-radius: 8px; transition: all 0.3s ease;" class="student-item">
+                  <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #6c63ff, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; flex-shrink: 0; ${u.profile_photo ? 'background-image: url(' + u.profile_photo + '); background-size: cover; background-position: center;' : ''}">${!u.profile_photo ? initial : ''}</div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 600; font-size: 14px; color: var(--text);">${fullName}</div>
+                    <div style="font-size: 12px; color: var(--muted);">${u.field_of_interest || 'General'}</div>
+                  </div>
+                  <button class="view-profile-btn" data-username="${u.username}" style="padding: 6px 12px; background: #6c63ff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.3s ease; white-space: nowrap;">View</button>
+                </div>
+              `
+            }).join('')
+            
+            // Add event listeners to view profile buttons
+            document.querySelectorAll('.view-profile-btn').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const username = btn.dataset.username
+                window.location.href = `user-profile.html?username=${username}`
+              })
+            })
+            
+            // Add hover effect to student items
+            document.querySelectorAll('.student-item').forEach(item => {
+              item.addEventListener('mouseenter', () => {
+                item.style.transform = 'translateY(-2px)'
+                item.style.boxShadow = '0 4px 12px rgba(108, 99, 255, 0.15)'
+              })
+              item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translateY(0)'
+                item.style.boxShadow = 'none'
+              })
+            })
+          }
+        } catch (err) {
+          console.error('Error loading suggested students:', err)
+        }
+      } catch (error) {
+        console.error('Error loading data:', error)
+        alert('Error loading feed: ' + error.message)
+      }
+    })
+
+    // Handle post form submission
+    const postForm = document.getElementById('postForm')
+    if (postForm) {
+      postForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        const title = postForm.querySelector('input[name="title"]').value
+        const body = postForm.querySelector('textarea[name="body"]').value
+        const imageFile = postForm.querySelector('input[name="imageFile"]').files[0]
+        const category = postForm.querySelector('select[name="category"]').value
+
+        try {
+          // Create FormData for multipart upload
+          const formData = new FormData()
+          formData.append('title', title)
+          formData.append('description', body)
+          formData.append('category', category)
+          if (imageFile) {
+            formData.append('image', imageFile)
+          }
+          
+          // Call API with FormData (no JSON encoding)
+          const headers = {
+            'Authorization': api.accessToken ? `Bearer ${api.accessToken}` : '',
+          }
+          
+          const response = await fetch(`${api.baseURL}/api/posts/`, {
+            method: 'POST',
+            headers: headers,
+            body: formData,
+          })
+          
+          if (!response.ok) {
+            const errorData = await response.json()
+            console.error('Backend error response:', errorData)
+            let errorMsg = 'Failed to create post'
+            if (errorData.detail) {
+              errorMsg = errorData.detail
+            } else if (errorData.image) {
+              errorMsg = 'Image error: ' + (Array.isArray(errorData.image) ? errorData.image[0] : errorData.image)
+            } else if (errorData.description) {
+              errorMsg = 'Description error: ' + (Array.isArray(errorData.description) ? errorData.description[0] : errorData.description)
+            } else if (errorData.category) {
+              errorMsg = 'Category error: ' + (Array.isArray(errorData.category) ? errorData.category[0] : errorData.category)
+            } else if (typeof errorData === 'object') {
+              errorMsg = Object.entries(errorData)
+                .map(([key, val]) => `${key}: ${Array.isArray(val) ? val[0] : val}`)
+                .join(', ')
+            }
+            throw new Error(errorMsg)
+          }
+          
+          alert('Post created successfully!')
+          postForm.reset()
+          // Reload posts
+          location.reload()
+        } catch (error) {
+          console.error('Error creating post:', error)
+          alert('Failed to create post: ' + error.message)
+        }
+      })
+    }
+  </script>
+</body>
+</html>

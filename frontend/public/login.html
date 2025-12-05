@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Login — ElevateU</title>
+  <link rel="stylesheet" href="global.css">
+</head>
+<body>
+  <div class="nav">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="brand">ElevateU</div>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="signup.html">Sign up</a>
+      <button class="theme-btn theme-toggle">🌓 Theme</button>
+    </div>
+  </div>
+
+  <div class="container" style="display:flex;justify-content:center;margin-top:26px">
+    <div style="max-width:460px;width:100%">
+      <div class="card">
+        <h2 style="margin-top:0;color:var(--primary)">Welcome back</h2>
+        <form id="loginForm" method="post" action="#">
+          <label class="small">Campus email</label>
+          <input name="email" type="email" placeholder="you@bennett.edu.in" required style="width:100%;padding:10px;border-radius:10px;margin:8px 0;border:1px solid #eef2ff;background:transparent">
+          <label class="small">Password</label>
+          <input name="password" type="password" required style="width:100%;padding:10px;border-radius:10px;margin:8px 0;border:1px solid #eef2ff;background:transparent">
+          <div style="display:flex;gap:12px;margin-top:14px">
+            <button class="btn" type="submit">Sign In</button>
+            <a class="btn ghost" href="signup.html">Create account</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script src="api-client.js"></script>
+  <script>
+    // Clear any stale tokens and cached data when login page loads
+    localStorage.removeItem('access')
+    localStorage.removeItem('refresh')
+    localStorage.removeItem('profilePhoto')
+    localStorage.removeItem('currentUser')
+    
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const email = document.querySelector('input[name="email"]').value
+      const password = document.querySelector('input[name="password"]').value
+      
+      try {
+        // Clear any existing invalid tokens
+        api.clearTokens()
+        
+        const result = await api.login(email, password)
+        console.log('Login successful:', result)
+        alert('Login successful!')
+        window.location.href = 'feed.html'
+      } catch (error) {
+        console.error('Login error:', error)
+        const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
+        alert('Login failed: ' + errorMsg)
+      }
+    })
+  </script>
+</body>
+</html>

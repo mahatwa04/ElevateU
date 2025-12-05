@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>User Profile — ElevateU</title>
+  <link rel="stylesheet" href="global.css">
+  <style>
+    .nav nav {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    .nav nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+    .nav nav a:hover {
+      color: var(--text);
+      background: rgba(108, 99, 255, 0.1);
+    }
+    .logout-btn {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    .logout-btn:hover {
+      background: var(--primary-600);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+    }
+    .profile-banner {
+      background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+      height: 200px;
+      border-radius: 0;
+    }
+    .profile-header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      margin-top: -60px;
+      position: relative;
+      z-index: 10;
+    }
+    .profile-avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+      color: white;
+      font-weight: 800;
+      flex-shrink: 0;
+      border: 4px solid var(--card);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .profile-info {
+      flex: 1;
+      padding-top: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .profile-info h1 {
+      font-size: 32px;
+      margin: 0 0 6px 0;
+      color: var(--text);
+      font-weight: 800;
+    }
+    .profile-info .dept {
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .profile-info .bio {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .follow-btn {
+      margin-top: 12px;
+      padding: 10px 24px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      width: fit-content;
+    }
+    .follow-btn:hover {
+      background: var(--primary-600);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+    }
+    .follow-btn.following {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .profile-stats {
+      display: flex;
+      gap: 48px;
+      margin-left: auto;
+    }
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .stat-num {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    .card h2 {
+      font-size: 20px;
+      margin: 0 0 20px 0;
+      color: var(--text);
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+    .empty-state div {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+    .user-posts {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .post-card {
+      background: linear-gradient(135deg, rgba(108, 99, 255, 0.05), rgba(139, 92, 246, 0.05));
+      border: 1px solid rgba(108, 99, 255, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.3s ease;
+    }
+    .post-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(108, 99, 255, 0.1);
+      border-color: rgba(108, 99, 255, 0.3);
+    }
+    .post-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      align-items: flex-start;
+    }
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .post-meta {
+      flex: 1;
+    }
+    .post-meta .name {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .post-meta .date {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .post-content {
+      margin-bottom: 12px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+    .post-image {
+      width: 100%;
+      border-radius: 8px;
+      margin: 12px 0;
+      max-height: 400px;
+      object-fit: cover;
+    }
+      margin-bottom: 12px;
+    }
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .post-meta {
+      flex: 1;
+    }
+    .post-meta .name {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .post-meta .date {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .post-content {
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .post-image {
+      width: 100%;
+      border-radius: 8px;
+      margin: 12px 0;
+      max-height: 400px;
+      object-fit: cover;
+    }
+    .follow-btn {
+      padding: 10px 24px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-top: 16px;
+    }
+    .follow-btn:hover {
+      background: var(--primary-600);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+    }
+    .follow-btn.following {
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .follow-btn.following:hover {
+      background: rgba(108, 99, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="brand">ElevateU</div>
+      <nav>
+        <a href="feed.html">Feed</a>
+        <a href="leaderboard.html">Leaderboard</a>
+        <a href="profile.html">Profile</a>
+      </nav>
+    </div>
+    <div class="nav-links">
+      <div class="small" id="navUsername">Loading...</div>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+      <button class="theme-btn theme-toggle">🌓 Theme</button>
+    </div>
+  </div>
+
+  <div class="profile-banner"></div>
+  <div class="profile-header">
+    <div class="profile-avatar" id="profileAvatar">A</div>
+    <div class="profile-info">
+      <h1 id="profileNameDisplay">User Name</h1>
+      <div class="dept" id="profileDeptDisplay">Not specified</div>
+      <div class="bio" id="profileBioDisplay">No bio yet</div>
+      <button class="follow-btn" id="followBtn">Follow</button>
+    </div>
+    <div class="profile-stats">
+      <div class="stat">
+        <div class="stat-num" id="achievementsCount">0</div>
+        <div class="stat-label">Achievements</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="followersCount">0</div>
+        <div class="stat-label">Followers</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="followingCount">0</div>
+        <div class="stat-label">Following</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>Achievements</h2>
+      <div class="user-posts" id="userPosts">
+        <div class="empty-state">
+          <div>📝</div>
+          <p>No achievements posted yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script src="api-client.js"></script>
+  <script>
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      api.logout()
+      window.location.href = 'index.html'
+    })
+
+    // Calculate score (same as leaderboard) for proper ranking
+    function calculateScore(user) {
+      return (user.achievements || 0) * 5 + (user.profile?.likes || 0) * 2 + (user.profile?.followers || 0) * 3
+    }
+
+    // Load user profile on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Check if user is logged in
+        if (!api.accessToken) {
+          window.location.href = 'login.html'
+          return
+        }
+        
+        // Get current user for navbar
+        const currentUser = await api.getMe()
+        document.getElementById('navUsername').textContent = currentUser.username
+
+        // Get username from URL params
+        const urlParams = new URLSearchParams(window.location.search)
+        const username = urlParams.get('username')
+
+        console.log('Page loaded with username param:', username)
+
+        if (!username) {
+          alert('No user specified')
+          window.location.href = 'leaderboard.html'
+          return
+        }
+
+        // Fetch user data - NO caching, always fresh from server
+        const response = await fetch(`${api.baseURL}/api/auth/users/?cachebuster=${Date.now()}`, {
+          headers: {
+            'Authorization': api.accessToken ? `Bearer ${api.accessToken}` : '',
+            'Content-Type': 'application/json',
+          },
+          cache: 'no-store'
+        })
+
+        if (!response.ok) throw new Error('Failed to fetch users')
+
+        const usersData = await response.json()
+        
+        console.log('Fetched users count:', usersData.length)
+        console.log('User usernames:', usersData.map(u => u.username))
+        
+        // Calculate scores, sort by score descending, then assign rank like leaderboard does
+        const usersWithScores = usersData.map((user) => ({
+          ...user,
+          score: calculateScore(user),
+        })).sort((a, b) => b.score - a.score).map((user, idx) => ({
+          ...user,
+          rank: idx + 1
+        }))
+        
+        // Find the requested user from the sorted, ranked list - case insensitive comparison
+        const user = usersWithScores.find(u => u.username.toLowerCase() === username.toLowerCase())
+
+        console.log('Found user:', user)
+
+        if (!user) {
+          alert('User not found. Available users: ' + usersData.map(u => u.username).join(', '))
+          window.location.href = 'leaderboard.html'
+          return
+        }
+
+        // Create full name - handle cases where first_name/last_name might not be set
+        let fullName = username
+        
+        // Try to build name from first_name and last_name if available
+        if (user.first_name && user.first_name.trim()) {
+          if (user.last_name && user.last_name.trim()) {
+            fullName = `${user.first_name.trim()} ${user.last_name.trim()}`
+          } else {
+            fullName = user.first_name.trim()
+          }
+        } else if (user.last_name && user.last_name.trim()) {
+          fullName = user.last_name.trim()
+        } else if (user.name && user.name.trim() && user.name !== username) {
+          fullName = user.name.trim()
+        } else {
+          // Capitalize username as fallback
+          fullName = username.split('.').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
+        }
+        
+        console.log('Displaying user:', {
+          username: user.username,
+          fullName: fullName,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          name: user.name,
+          field_of_interest: user.field_of_interest,
+          bio: user.bio
+        })
+
+        // Update profile
+        const initial = (user.first_name || user.username || 'U').charAt(0).toUpperCase()
+        const profileAvatar = document.getElementById('profileAvatar')
+        if (user.profile_photo) {
+          profileAvatar.style.backgroundImage = `url(${user.profile_photo})`
+          profileAvatar.style.backgroundSize = 'cover'
+          profileAvatar.style.backgroundPosition = 'center'
+          profileAvatar.textContent = ''
+        } else {
+          profileAvatar.textContent = initial
+        }
+        document.getElementById('profileNameDisplay').textContent = fullName
+        document.getElementById('profileDeptDisplay').textContent = user.field_of_interest || user.department || 'Not specified'
+        document.getElementById('profileBioDisplay').textContent = user.bio || 'No bio yet'
+        document.getElementById('achievementsCount').textContent = user.achievements || 0
+        document.getElementById('followersCount').textContent = user.profile?.followers || user.followers || 0
+        document.getElementById('followingCount').textContent = user.profile?.following || user.following || 0
+
+        // Setup follow button
+        const followBtn = document.getElementById('followBtn')
+        const viewedUserId = user.id
+        
+        // Get follow state from API response (is_followed field)
+        let isFollowing = user.is_followed || false
+        
+        if (isFollowing) {
+          followBtn.textContent = 'Following'
+          followBtn.classList.add('following')
+        }
+        
+        // Follow/Unfollow toggle
+        followBtn.addEventListener('click', async () => {
+          try {
+            const method = isFollowing ? 'DELETE' : 'POST'
+            const response = await fetch(`${api.baseURL}/api/auth/users/${viewedUserId}/follow/`, {
+              method: method,
+              headers: {
+                'Authorization': `Bearer ${api.accessToken}`,
+                'Content-Type': 'application/json',
+              }
+            })
+            
+            if (!response.ok) {
+              throw new Error('Failed to update follow status')
+            }
+            
+            // Toggle button state
+            isFollowing = !isFollowing
+            if (isFollowing) {
+              followBtn.textContent = 'Following'
+              followBtn.classList.add('following')
+              // Increase follower count
+              const currentCount = parseInt(document.getElementById('followersCount').textContent)
+              document.getElementById('followersCount').textContent = currentCount + 1
+            } else {
+              followBtn.textContent = 'Follow'
+              followBtn.classList.remove('following')
+              // Decrease follower count
+              const currentCount = parseInt(document.getElementById('followersCount').textContent)
+              document.getElementById('followersCount').textContent = Math.max(0, currentCount - 1)
+            }
+          } catch (error) {
+            console.error('Error updating follow status:', error)
+            alert('Failed to update follow status')
+          }
+        })
+
+        // Load user's posts/achievements by fetching from API
+        try {
+          const postsResponse = await fetch(`${api.baseURL}/api/posts/?user=${user.id}`, {
+            headers: {
+              'Authorization': api.accessToken ? `Bearer ${api.accessToken}` : '',
+              'Content-Type': 'application/json',
+            }
+          })
+          
+          if (postsResponse.ok) {
+            const posts = await postsResponse.json()
+            const userPostsContainer = document.getElementById('userPosts')
+            
+            if (posts && posts.length > 0) {
+              userPostsContainer.innerHTML = posts.map(post => `
+                <div class="post-card">
+                  <div class="post-header">
+                    <div class="post-avatar">${initial}</div>
+                    <div class="post-meta">
+                      <div class="name">${fullName}</div>
+                      <div class="date">${new Date(post.created_at).toLocaleDateString()}</div>
+                    </div>
+                  </div>
+                  <div class="post-content">${post.description}</div>
+                  ${post.image ? `<img src="${post.image}" class="post-image" alt="Post" />` : ''}
+                </div>
+              `).join('')
+            }
+          }
+        } catch (error) {
+          console.error('Error loading posts:', error)
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error)
+        alert('Error loading profile: ' + error.message)
+      }
+    })
+  </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Sign up — ElevateU</title>
+  <link rel="stylesheet" href="global.css">
+</head>
+<body>
+  <div class="nav">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="brand">ElevateU</div>
+    </div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="login.html">Login</a>
+      <button class="theme-btn theme-toggle">🌓 Theme</button>
+    </div>
+  </div>
+
+  <div class="container" style="display:flex;justify-content:center;align-items:flex-start;gap:24px">
+    <div style="max-width:460px;width:100%">
+      <div class="card">
+        <h2 style="margin-top:0;color:var(--primary)">Create your campus account</h2>
+        <form id="signupForm" method="post" action="#">
+          <label class="small">Full name</label>
+          <input name="name" required style="width:100%;padding:10px;border-radius:10px;margin:8px 0;border:1px solid #eef2ff;background:transparent">
+          <label class="small">Campus email (@bennett.edu.in)</label>
+          <input name="email" type="email" placeholder="yourname@bennett.edu.in" required style="width:100%;padding:10px;border-radius:10px;margin:8px 0;border:1px solid #eef2ff;background:transparent">
+          <label class="small">Password</label>
+          <input name="password" type="password" required style="width:100%;padding:10px;border-radius:10px;margin:8px 0;border:1px solid #eef2ff;background:transparent">
+          <div style="display:flex;gap:12px;margin-top:14px">
+            <button class="btn" type="submit">Create Account</button>
+            <a class="btn ghost" href="login.html" style="text-decoration:none;">Sign in</a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div style="width:360px">
+      <div class="card">
+        <h3 class="small">Why sign up?</h3>
+        <ul class="small">
+          <li>Showcase projects & awards</li>
+          <li>Get endorsements & followers</li>
+          <li>Climb the campus leaderboard</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="theme.js"></script>
+  <script src="api-client.js"></script>
+  <script>
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const name = document.querySelector('input[name="name"]').value
+      const email = document.querySelector('input[name="email"]').value
+      const password = document.querySelector('input[name="password"]').value
+      
+      try {
+        const result = await api.register(email, password, name)
+        console.log('Registration successful:', result)
+        
+        // Store tokens and redirect to feed
+        if (result.access && result.refresh) {
+          api.saveTokens(result.access, result.refresh)
+          alert('Account created and logged in! 🎉')
+          window.location.href = 'feed.html'
+        } else {
+          alert('Registration successful! Please login.')
+          window.location.href = 'login.html'
+        }
+      } catch (error) {
+        console.error('Registration error:', error)
+        const errorMsg = error.response?.data?.detail || error.message || 'Unknown error'
+        alert('Registration failed: ' + errorMsg)
+      }
+    })
+  </script>
+</body>
+</html>

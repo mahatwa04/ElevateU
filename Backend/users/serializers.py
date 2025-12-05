@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'field_of_interest',
             'bio',
+            'profile_photo',
             'campus_verified',
         )
 
